@@ -1,3 +1,10 @@
+#
+# IMPORTANT:
+# fdconfig.conf is added to GitIgnore to prevent secrets being comitted to git.
+fdconfig.conf
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
