@@ -45,12 +45,19 @@ try:
     epd.display(epd.getbuffer(Himage),epd.getbuffer(Other))
     logging.info("Done. Going to sleep")
     epd.sleep()
+    
+    logging.info("Done")
+
+    exit()
     logging.info("Waiting for 10 seconds")
     time.sleep(10)
+
+
 
     logging.info("Waking up from sleep")
     epd.init()
     logging.info("Woke up")
+
 
     # Drawing on the Vertical image
     logging.info("2.Drawing on the Vertical image...")
@@ -93,6 +100,7 @@ try:
 
     logging.info("Goto Sleep...")
     epd.sleep()
+    
     
 #except IOError as e:
 #    logging.info(e)
