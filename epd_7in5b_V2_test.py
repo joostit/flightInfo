@@ -43,6 +43,12 @@ try:
     draw_Himage.rectangle((80, 50, 130, 100), fill = 0)
     draw_Himage.chord((200, 50, 250, 100), 0, 360, fill = 0)
     epd.display(epd.getbuffer(Himage),epd.getbuffer(Other))
+
+    print("Showing for 10 seconds")
+    time.sleep(10)
+    print("Clearing display")
+    epd.Clear()
+
     logging.info("Done. Going to sleep")
     epd.sleep()
     
