@@ -1,6 +1,8 @@
 import json
 import requests
 import configparser
+from types import SimpleNamespace
+from flightData import flightData
 
 class FlDisplay:
 
@@ -14,6 +16,7 @@ class FlDisplay:
 
     def __get_flight_info(self):
     
+        flightList = []
         api_url = '{0}flights.json'.format(self.api_url_base)
 
         response = requests.get(api_url, headers=self.headers)
@@ -21,35 +24,23 @@ class FlDisplay:
         print(api_url)
 
         if response.status_code == 200:
-            return json.loads(response.content.decode('utf-8'))
+            decoded = response.content.decode('utf-8')
+            flights = json.loads(decoded, object_hook=lambda d: SimpleNamespace(**d))
+
+            for f in flights:
+                fData = flightData()
+                fData.fillRawData(f)
+                flightList.append(fData)
+
+            return flightList
         else:
             print(response)
             return None
-        
-    
 
-
-    def __readConfig(self):
-        config = configparser.ConfigParser()
-        config.read('fdconfig.conf')
-        
-        print(config.sections())
-
-        clubSchemaName = config['API']["clubSchemaName"]
-        api_token = config['API']["apiKey"]
-
-        print("Club schema name: " + clubSchemaName)
-
-        self.api_url_base = self.api_url_baseFormat.format(clubSchemaName)
-
-        self.headers = {'Content-Type': 'application/json',
-                'X-API-KEY': '{0}'.format(api_token)}
 
 
     def run(self):
-
         self.__readConfig()
-
         self.__displayFlightsDebug()
 
         
@@ -58,12 +49,41 @@ class FlDisplay:
         flights = self.__get_flight_info()
 
         if flights is not None:
-            print("flighs:")
-            print("Length: " + str(len(flights)))
+            print("flights:")
             for f in flights:
-                print('{0}'.format(f))
+                txt = "-- "
+                txt += f.aircraftRegistration
+                txt += " " + f.aircraftType
+                txt += " " + f.pilotInCommandName
+                
+                if(f.hasPassenger()):
+                    txt += " & " + f.passengerName
+                
+                if(f.hasLaunched()):
+                    txt += "   " + f.launchTime
+                    txt += " (" + f.launchMethod + ")"
+
+                    if(f.hasLanded()):
+                        txt += " " + f.landingTime
+                
+                txt += " Overland: " + str(f.isCrossCountry)
+                    
+                print(txt)
         else:
             print('[!] Request Failed')
+
+
+    def __readConfig(self):
+            config = configparser.ConfigParser()
+            config.read('fdconfig.conf')
+            clubSchemaName = config['API']["clubSchemaName"]
+            api_token = config['API']["apiKey"]
+            self.api_url_base = self.api_url_baseFormat.format(clubSchemaName)
+            self.headers = {'Content-Type': 'application/json',
+                    'X-API-KEY': '{0}'.format(api_token)}
+            
+            print("Loaded club schema name: " + clubSchemaName)
+
 
 
 if __name__ == "__main__":
