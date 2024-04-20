@@ -15,14 +15,27 @@ UpdatesBeforeFullRefresh = 3
 class EPaperDisplay:
 
     def __init__(self):
-        self.EnableDisplay = False         # Enabled the e-paper display. Can be set to False for faster debugging
+        self.EnableDisplay = False        # Enabled the e-paper display. Can be set to False for faster debugging
         self.__cntBeforeFullRefresh = 1   # Counts down on every screen update. When zero, a full refresh is needed
-        self.epd = epd7in5b_V2.EPD()
+
+        self.fillColor = 0                # The foreground color. Use this for lines and text on both the black and red image canvases  
+        self.backColor = 0             # The backround color. Use this for lines and text on both the black and red image canvases  
+        
         self.font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
         self.font18 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 18)
         self.font16 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 16)
         self.fontBBold18 = ImageFont.truetype(os.path.join(picdir, 'Bitter-Black.ttf'), 18)
         self.fontBBold24 = ImageFont.truetype(os.path.join(picdir, 'Bitter-Black.ttf'), 24)
+
+        self.fontArial16 = ImageFont.truetype(os.path.join(picdir, 'arial.ttf'), 16)
+        self.fontArial20 = ImageFont.truetype(os.path.join(picdir, 'arial.ttf'), 20)
+        self.fontArial24 = ImageFont.truetype(os.path.join(picdir, 'arial.ttf'), 24)
+        self.fontABlack20 = ImageFont.truetype(os.path.join(picdir, 'arialBlack.ttf'), 20)
+        self.fontABlack24 = ImageFont.truetype(os.path.join(picdir, 'arialBlack.ttf'), 24)
+        self.fontABlack28 = ImageFont.truetype(os.path.join(picdir, 'arialBlack.ttf'), 28)
+        self.fontABold24 = ImageFont.truetype(os.path.join(picdir, 'arialBold.ttf'), 24)
+
+        self.epd = epd7in5b_V2.EPD()
 
         self.blackImage = None      # Holds the image buffer for the black display layer
         self.redImage = None        # # Holds the image buffer for the red display layer
@@ -36,11 +49,11 @@ class EPaperDisplay:
         if(self.EnableDisplay):
             self.epd.init()
             self.epd.Clear()
-            self.imgBackColor = 255
+            self.backColor = 255
             self.fillColor = 0
             self.__cntBeforeFullRefresh = UpdatesBeforeFullRefresh
         else:
-            self.imgBackColor = 0
+            self.backColor = 0
             self.fillColor = 255
             if not os.path.exists(imgDumpDir):
                 os.makedirs(imgDumpDir)
@@ -52,8 +65,8 @@ class EPaperDisplay:
         if(self.blackImage != None or self.redImage != None):
             raise RuntimeError("Cannot get new canvases when the old ones haven't been shown yet")
 
-        self.blackImage = Image.new('1', (self.epd.width, self.epd.height), self.imgBackColor)
-        self.redImage = Image.new('1', (self.epd.width, self.epd.height), self.imgBackColor)
+        self.blackImage = Image.new('1', (self.epd.width, self.epd.height), self.backColor)
+        self.redImage = Image.new('1', (self.epd.width, self.epd.height), self.backColor)
         blackCanvas = ImageDraw.Draw(self.blackImage)
         redCanvas = ImageDraw.Draw(self.redImage)
 
