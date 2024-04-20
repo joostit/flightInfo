@@ -3,6 +3,8 @@
 # fdconfig.conf is added to GitIgnore to prevent secrets being comitted to git.
 fdconfig.conf
 
+# Debug image dump folder
+imgDump/
 
 
 # Byte-compiled / optimized / DLL files
