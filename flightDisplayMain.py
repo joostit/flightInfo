@@ -76,9 +76,34 @@ class flightDisplayMain:
     
 
     def __getActiveFlights(self, allFlights):
+
+        # create some dummy flights
         flightA = flightData()
+        flightA.aircraftRegistration = "PH-1480"
+        flightA.pilotInCommandName = "Zacharias Zweefmans"
+        flightA.launchTime = "12:23"
+        flightA.landingTime = "13:19"
+
         flightB = flightData()
-        return [flightA, flightB]
+        flightB.aircraftRegistration = "PH-712"
+        flightB.pilotInCommandName = "Frederique frillevrees"
+        flightB.launchTime = "8:04"
+        flightB.landingTime = "13:05"
+
+        flightC = flightData()
+        flightC.aircraftRegistration = "PH-401"
+        flightC.pilotInCommandName = "Harry houthakker"
+        flightC.launchTime = "11:31"
+        flightC.landingTime = "12:54"
+
+        flightD = flightData()
+        flightD.aircraftRegistration = "PH-1471"
+        flightD.pilotInCommandName = "Bam Brommermans"
+        flightD.launchTime = "10:03"
+        flightD.landingTime = "12:40"
+
+
+        return [flightA, flightB, flightC, flightD] 
 
 
     def __displayFlightsDebug(self):

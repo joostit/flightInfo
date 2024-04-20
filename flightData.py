@@ -1,8 +1,10 @@
-
+import time
+from datetime import datetime
+import datetime
 
 class flightData:
 
-    def __init(self):
+    def __init__(self):
 
         self.uuid = ""
         self.isCrossCountry = ""
@@ -20,13 +22,13 @@ class flightData:
         
 
     def hasLaunched(self):
-        return self.launchTime != None
+        return self.launchTime != None and self.launchTime != ""
     
     def hasLanded(self):
-        return self.landingTime != None
+        return self.landingTime != None and self.landingTime != "" 
     
     def hasPassenger(self):
-        return self.passengerName != ""
+        return self.passengerName != None and self.passengerName != ""
 
 
     def fillRawData(self, raw):
@@ -43,6 +45,26 @@ class flightData:
         self.launchTime = raw.start_tijd
         self.pilotInCommandName = raw.gezagvoerder_naam
         self.passengerName = raw.tweede_inzittende_naam
+
+
+    def getFlightTime(self):
+        lauchTimestamp: datetime.datetime
+        timeFormat = "%H:%M"
+        if self.hasLaunched():
+            lauchTimestamp =  datetime.datetime.strptime(self.launchTime, timeFormat)
+        else:
+            return None
+        
+        if self.hasLanded():
+            landTimestamp = datetime.datetime.strptime(self.landingTime, timeFormat)
+        else:
+            landTimestamp = datetime.now().time
+
+        diff = (landTimestamp - lauchTimestamp)
+        return diff
+
+        
+
 
 
 

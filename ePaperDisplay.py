@@ -27,7 +27,7 @@ class EPaperDisplay:
         self.fontBBold18 = ImageFont.truetype(os.path.join(picdir, 'Bitter-Black.ttf'), 18)
         self.fontBBold24 = ImageFont.truetype(os.path.join(picdir, 'Bitter-Black.ttf'), 24)
 
-        self.fontArial16 = ImageFont.truetype(os.path.join(picdir, 'arial.ttf'), 16)
+        self.fontArial18 = ImageFont.truetype(os.path.join(picdir, 'arial.ttf'), 18)
         self.fontArial20 = ImageFont.truetype(os.path.join(picdir, 'arial.ttf'), 20)
         self.fontArial24 = ImageFont.truetype(os.path.join(picdir, 'arial.ttf'), 24)
         self.fontABlack20 = ImageFont.truetype(os.path.join(picdir, 'arialBlack.ttf'), 20)
