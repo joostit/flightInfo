@@ -20,6 +20,9 @@ class EPaperDisplay:
         self.epd = epd7in5b_V2.EPD()
         self.font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
         self.font18 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 18)
+        self.font16 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 16)
+        self.fontBBold18 = ImageFont.truetype(os.path.join(picdir, 'Bitter-Black.ttf'), 18)
+        self.fontBBold24 = ImageFont.truetype(os.path.join(picdir, 'Bitter-Black.ttf'), 24)
 
         self.blackImage = None      # Holds the image buffer for the black display layer
         self.redImage = None        # # Holds the image buffer for the red display layer

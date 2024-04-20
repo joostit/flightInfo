@@ -66,6 +66,8 @@ class flightDisplayMain:
 
         self.display.showData(activeFlights, pastFlights)
 
+        exit()      # Temporary exit here just for easier development.
+
 
     def __getPastFlights(self, allFlights):
         flightA = flightData()

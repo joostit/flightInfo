@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from ePaperDisplay import EPaperDisplay
 
 
@@ -22,6 +22,27 @@ class FlightDataDisplayer:
         self.epd.showCanvases()
 
 
+    def __drawLayout(self,  blackCanvas, redCanvas):
+        
+        vertDivideX = 500
+
+        blackCanvas.line((0,28, vertDivideX,28), self.epd.fillColor, 3)                 # Horizontal top line
+        blackCanvas.line((vertDivideX, 0, vertDivideX, 480), self.epd.fillColor, 3)     # Vertical divider
+        
+        blackCanvas.line((vertDivideX, 250, 800, 250), self.epd.fillColor, 3)           # Horizontal activeFlights bar
+
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        blackCanvas.text((570, 3), timestamp, font = self.epd.fontBBold24, fill = self.epd.fillColor)
+        blackCanvas.text((570, 33), timestamp, font = self.epd.fontBBold18, fill = self.epd.fillColor)
+
+
+        blackCanvas.text((570, 130), timestamp, font = self.epd.font24, fill = self.epd.fillColor)
+        blackCanvas.text((570, 160), timestamp, font = self.epd.font18, fill = self.epd.fillColor)
+        blackCanvas.text((570, 190), timestamp, font = self.epd.font16, fill = self.epd.fillColor)
+
+        #redCanvas.text((600, 300), timestamp, font = self.epd.font24, fill = self.epd.fillColor)
+
+
     def __drawActiveFlights(self, activeFlights, blackCanvas, redCanvas):
             pass
     
@@ -30,10 +51,7 @@ class FlightDataDisplayer:
             pass
     
 
-    def __drawLayout(self,  blackCanvas, redCanvas):
-            timestamp = datetime.date.today().strftime('%Y-%m-%d %H:%M:%S')
-            blackCanvas.text((650, 0), timestamp, font = self.epd.font24, fill = self.epd.fillColor)
-            redCanvas.text((650, 300), timestamp, font = self.epd.font24, fill = self.epd.fillColor)
+    
 
 
     def shutdown(self):
