@@ -4,16 +4,19 @@ from display import epd7in5b_V2
 from PIL import Image,ImageDraw,ImageFont
 
 picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'display')
+imgDumpDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'imgDump')
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
-UpdatesBeforeFullRefresh = 3
 
+UpdatesBeforeFullRefresh = 3
+debugImageFolder = "imgDump"
 
 class EPaperDisplay:
 
     def __init__(self):
+        self.EnableDisplay = False         # Enabled the e-paper display. Can be set to False for faster debugging
         self.__cntBeforeFullRefresh = 1   # Counts down on every screen update. When zero, a full refresh is needed
         self.epd = epd7in5b_V2.EPD()
         self.font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
@@ -23,9 +26,13 @@ class EPaperDisplay:
 
     def initialize(self):
         logging.info("Initializing and clearing e-paper display. This might take a few seconds")
-        self.epd.init()
-        self.epd.Clear()
-        self.__cntBeforeFullRefresh = UpdatesBeforeFullRefresh
+
+        if(self.EnableDisplay):
+            self.epd.init()
+            self.epd.Clear()
+            self.__cntBeforeFullRefresh = UpdatesBeforeFullRefresh
+        else:
+             logging.info("Initalize: Epaper disabled")
 
 
 
@@ -75,11 +82,25 @@ class EPaperDisplay:
     # Shows the provided canvases on the display
     # In a future update this might be optimized for not always having to do a full display update
     def __showCanvasOnDisplay(self, blackImage, redImage):
-         self.epd.display(self.epd.getbuffer(blackImage), self.epd.getbuffer(redImage))
+         
+         if(self.EnableDisplay):
+            logging.info("Writing image data to display")
+            self.epd.display(self.epd.getbuffer(blackImage), self.epd.getbuffer(redImage))
+         else:
+            logging.info("Display disabled. Writing image data to files")
+
+            if not os.path.exists(imgDumpDir):
+                os.makedirs(imgDumpDir)
+            blackImage.save(os.path.join(imgDumpDir, 'blackImage.bmp'))
+            redImage.save(os.path.join(imgDumpDir, 'redImage.bmp'))
+
          self.__cntBeforeFullRefresh -= 1
 
 
     def shutdown(self):
         logging.info("Clearing and shutting down the e-paper display. This might take a few seconds.")
-        self.epd.Clear()
-        self.epd.sleep()
+        if(self.EnableDisplay):
+            self.epd.Clear()
+            self.epd.sleep()
+
+        logging.info("Display shutdown completed")
