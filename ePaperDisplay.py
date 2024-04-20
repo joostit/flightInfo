@@ -25,8 +25,10 @@ class EPaperDisplay:
         self.redImage = None        # # Holds the image buffer for the red display layer
 
 
-    def initialize(self):
+    def initialize(self, enableDisplay):
         print("Initializing and clearing e-paper display. This might take a few seconds")
+
+        self.EnableDisplay = enableDisplay
 
         if(self.EnableDisplay):
             self.epd.init()

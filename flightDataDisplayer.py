@@ -8,8 +8,8 @@ class FlightDataDisplayer:
         self.epd = EPaperDisplay()
 
 
-    def initialize(self):
-        self.epd.initialize()
+    def initialize(self, enableDisplay):
+        self.epd.initialize(enableDisplay)
 
 
     def showData(self, activeFlights, pastFlights):

@@ -17,6 +17,7 @@ class FlDisplay:
         self.api_url_base = ""
         self.api_url_baseFormat = "https://admin.zweef.app/club/{0}/api/"
         self.headers = ""
+        self.enableDisplay = False
         self.display = FlightDataDisplayer()
 
 
@@ -48,7 +49,8 @@ class FlDisplay:
     def run(self):
         
         self.__readConfig()
-        self.display.initialize()
+
+        self.display.initialize(self.enableDisplay)
 
         while True:
             self.__appCycle()
@@ -115,6 +117,8 @@ class FlDisplay:
             self.api_url_base = self.api_url_baseFormat.format(clubSchemaName)
             self.headers = {'Content-Type': 'application/json',
                     'X-API-KEY': '{0}'.format(api_token)}
+            
+            self.enableDisplay = config["DISPLAY"]["displayEnabled"].upper() == "TRUE"
             
             print("Loaded club schema name: " + clubSchemaName)
 

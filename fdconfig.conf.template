@@ -2,3 +2,5 @@
 clubSchemaName = YourClubSchemaName
 apiKey = YourAPIKey
 
+[DISPLAY]
+displayEnabled = true
