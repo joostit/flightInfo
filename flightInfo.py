@@ -6,8 +6,8 @@ import time
 import requests
 import configparser
 from types import SimpleNamespace
-from ePaperDisplay import EPaperDisplay
 from flightData import flightData
+from flightDataDisplayer import FlightDataDisplayer
 
 class FlDisplay:
 
@@ -17,7 +17,7 @@ class FlDisplay:
         self.api_url_base = ""
         self.api_url_baseFormat = "https://admin.zweef.app/club/{0}/api/"
         self.headers = ""
-        self.display = EPaperDisplay()
+        self.display = FlightDataDisplayer()
 
 
     def __get_flight_info(self):

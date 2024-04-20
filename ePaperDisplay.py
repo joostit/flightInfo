@@ -2,17 +2,15 @@ import datetime
 import os
 from display import epd7in5b_V2
 from PIL import Image,ImageDraw,ImageFont, ImageOps
-
 import numpy as np
+import logging
 
 picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'display')
 imgDumpDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'imgDump')
-import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
 UpdatesBeforeFullRefresh = 3
-debugImageFolder = "imgDump"
 
 class EPaperDisplay:
 
@@ -23,9 +21,12 @@ class EPaperDisplay:
         self.font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
         self.font18 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 18)
 
+        self.blackImage = None      # Holds the image buffer for the black display layer
+        self.redImage = None        # # Holds the image buffer for the red display layer
+
 
     def initialize(self):
-        logging.info("Initializing and clearing e-paper display. This might take a few seconds")
+        print("Initializing and clearing e-paper display. This might take a few seconds")
 
         if(self.EnableDisplay):
             self.epd.init()
@@ -38,77 +39,71 @@ class EPaperDisplay:
             self.fillColor = 255
             if not os.path.exists(imgDumpDir):
                 os.makedirs(imgDumpDir)
-                logging.info("Initalize: Epaper disabled")
+                print("Initalize: Epaper disabled")
 
 
-    def showData(self, activeFlights, pastFlights):
-        
-        blackImage = Image.new('1', (self.epd.width, self.epd.height), self.imgBackColor)
-        redImage = Image.new('1', (self.epd.width, self.epd.height), self.imgBackColor)
-        blackCanvas = ImageDraw.Draw(blackImage)
-        redCanvas = ImageDraw.Draw(redImage)
-        
+    def getDisplayCanvases(self):
+
+        if(self.blackImage != None or self.redImage != None):
+            raise RuntimeError("Cannot get new canvases when the old ones haven't been shown yet")
+
+        self.blackImage = Image.new('1', (self.epd.width, self.epd.height), self.imgBackColor)
+        self.redImage = Image.new('1', (self.epd.width, self.epd.height), self.imgBackColor)
+        blackCanvas = ImageDraw.Draw(self.blackImage)
+        redCanvas = ImageDraw.Draw(self.redImage)
+
+        return blackCanvas, redCanvas
+
+
+    def showCanvases(self):
+        if(self.blackImage == None or self.redImage == None):
+            raise RuntimeError("Cannot canvases on the display when they haven'nt been created yet")
+
         self.__prepareForDisplayUpdate()
-
-        self.__drawLayout(blackCanvas, redCanvas)
-        self.__drawActiveFlights(activeFlights, blackCanvas, redCanvas)
-        self.__drawPastFlights(pastFlights, blackCanvas, redCanvas)
-
-        self.__showCanvasOnDisplay(blackImage, redImage)
-
-
-    def __drawActiveFlights(self, activeFlights, blackCanvas, redCanvas):
-            pass
-    
-    def __drawPastFlights(self, pastFlights, blackCanvas, redCanvas):
-            pass
-    
-    def __drawLayout(self,  blackCanvas, redCanvas):
-            timestamp = datetime.date.today().strftime('%Y-%m-%d %H:%M:%S')
-            blackCanvas.text((650, 0), timestamp, font = self.font24, fill = self.fillColor)
-            redCanvas.text((650, 300), timestamp, font = self.font24, fill = self.fillColor)
-            pass
+        self.__showImagesOnDisplay()
+        self.blackImage = None
+        self.redImage = None
 
 
     # Prepares the display for the next update by reinitializing and clearing the display
     def __prepareForDisplayUpdate(self):
         if(self.EnableDisplay):
-            logging.info("Initializing e-paper display.")
+            print("Waking up e-paper display.")
             self.epd.init()
 
             if(self.__cntBeforeFullRefresh <= 0):
-                logging.info("Doing a full e-paper display clear.")
+                print("Doing a full e-paper display clear.")
                 self.epd.Clear()
                 self.__cntBeforeFullRefresh = UpdatesBeforeFullRefresh
             else:
-                logging.info("Omitting full display clearing.")
+                print("Omitting display full clear.")
 
 
     # Shows the provided canvases on the display
-    def __showCanvasOnDisplay(self, blackImage, redImage):
+    def __showImagesOnDisplay(self):
          
          if(self.EnableDisplay):
-            logging.info("Writing image data to display")
-            self.epd.display(self.epd.getbuffer(blackImage), self.epd.getbuffer(redImage))
+            print("Writing image data to display")
+            self.epd.display(self.epd.getbuffer(self.blackImage), self.epd.getbuffer(self.redImage))
          else:
-            logging.info("Display disabled. Writing image data to files")
-            self.__saveDisplayImage(blackImage, redImage)
+            print("Display disabled. Writing image data to files")
+            self.__saveDisplayImage(self.blackImage, self.redImage)
          self.__cntBeforeFullRefresh -= 1
 
 
-    def __saveDisplayImage(self, blackImage, redImage):
+    def __saveDisplayImage(self, imgBlack, imgRed):
  
-        whiteimg = Image.new('RGBA', (blackImage.width, blackImage.height))
+        whiteimg = Image.new('RGBA', (imgBlack.width, imgBlack.height))
         whiteimg.paste((255,255,255), (0,0, whiteimg.width, whiteimg.height) )
 
-        redMask = self.__convertToMaskedForeground(redImage, 255, 0, 0)
-        blackMask = self.__convertToMaskedForeground(blackImage, 0, 0, 0)
+        redMask = self.__convertToMaskedForeground(imgRed, 255, 0, 0)
+        blackMask = self.__convertToMaskedForeground(imgBlack, 0, 0, 0)
 
         whiteimg.paste(redMask, (0,0), redMask)
         whiteimg.paste(blackMask, (0,0), blackMask)
         whiteimg.save(os.path.join(imgDumpDir, 'display.bmp'))
 
-        logging.info("Saved display image to display.bmp")
+        print("Saved display image to display.bmp")
 
 
     # Converts a black and white image to an image with the desired foreground color leaves the white pixels as a mask
@@ -133,9 +128,9 @@ class EPaperDisplay:
 
 
     def shutdown(self):
-        logging.info("Clearing and shutting down the e-paper display. This might take a few seconds.")
+        print("Clearing and shutting down the e-paper display. This might take a few seconds.")
         if(self.EnableDisplay):
             self.epd.Clear()
             self.epd.sleep()
 
-        logging.info("Display shutdown completed")
+        print("Display shutdown completed")
