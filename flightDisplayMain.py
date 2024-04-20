@@ -9,9 +9,7 @@ from types import SimpleNamespace
 from flightData import flightData
 from flightDataDisplayer import FlightDataDisplayer
 
-class FlDisplay:
-
-    
+class flightDisplayMain:
 
     def __init__(self):
         self.api_url_base = ""
@@ -130,7 +128,7 @@ class FlDisplay:
 
 if __name__ == "__main__":
     
-    flDisplay = FlDisplay()
+    flDisplay = flightDisplayMain()
     try:
         flDisplay.run()
     except KeyboardInterrupt:    
