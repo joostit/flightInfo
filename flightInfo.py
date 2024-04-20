@@ -1,7 +1,12 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
+
 import json
+import time
 import requests
 import configparser
 from types import SimpleNamespace
+from ePaperDisplay import EPaperDisplay
 from flightData import flightData
 
 class FlDisplay:
@@ -12,6 +17,7 @@ class FlDisplay:
         self.api_url_base = ""
         self.api_url_baseFormat = "https://admin.zweef.app/club/{0}/api/"
         self.headers = ""
+        self.display = EPaperDisplay()
 
 
     def __get_flight_info(self):
@@ -38,12 +44,40 @@ class FlDisplay:
             return None
 
 
-
+    # The main entry point for this class to run the application
     def run(self):
-        self.__readConfig()
-        self.__displayFlightsDebug()
-
         
+        self.__readConfig()
+        self.display.initialize()
+
+        while True:
+            self.__appCycle()
+            time.sleep(45)
+
+
+    #  Gets called at the application update cycle interval
+    def __appCycle(self):
+        #self.__displayFlightsDebug()
+
+        allFlights = []
+
+        pastFlights = self.__getPastFlights(allFlights)
+        activeFlights = self.__getActiveFlights(allFlights)
+
+        self.display.showData(activeFlights, pastFlights)
+
+
+    def __getPastFlights(self, allFlights):
+        flightA = flightData()
+        flightB = flightData()
+        return [flightA, flightB]
+    
+
+    def __getActiveFlights(self, allFlights):
+        flightA = flightData()
+        flightB = flightData()
+        return [flightA, flightB]
+
 
     def __displayFlightsDebug(self):
         flights = self.__get_flight_info()
@@ -85,8 +119,17 @@ class FlDisplay:
             print("Loaded club schema name: " + clubSchemaName)
 
 
+    def shutdown(self):
+        self.display.shutdown()
+
+
 
 if __name__ == "__main__":
     
     flDisplay = FlDisplay()
-    flDisplay.run()
+    try:
+        flDisplay.run()
+    except KeyboardInterrupt:    
+        print("Application shutting down")
+        flDisplay.shutdown()
+        exit()
