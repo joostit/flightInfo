@@ -37,7 +37,7 @@ class FlightDataDisplayer:
         topRowY = 33
 
         blackCanvas.line((0, topRowY, vertDivideX, topRowY), self.epd.fillColor, 6)             # Horizontal top line
-        blackCanvas.line((vertDivideX, 0, vertDivideX, 480), self.epd.fillColor, 6)             # Vertical divider
+        blackCanvas.line((vertDivideX, 0, vertDivideX, 480), self.epd.fillColor, 10)             # Vertical divider
         blackCanvas.line((vertDivideX, topRowY, 800, topRowY), self.epd.fillColor, 3)           # Horizontal infoPane bar
         blackCanvas.line((vertDivideX, 200, 800, 200), self.epd.fillColor, 3)                   # Horizontal activeFlights bar
         blackCanvas.text((180, -7), "Last flights", font = self.epd.fontABlack28, fill = self.epd.fillColor)
@@ -48,7 +48,7 @@ class FlightDataDisplayer:
         col1X = 580
         col2X = 660
 
-        refreshIcon = ImageOps.invert(Image.open(os.path.join(self.imgDir, 'refreshA.bmp')).convert("L"))
+        refreshIcon = Image.open(os.path.join(self.imgDir, 'refreshA.bmp'))
         blackCanvas.bitmap((590, 5), refreshIcon, fill = self.epd.fillColor)
 
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
