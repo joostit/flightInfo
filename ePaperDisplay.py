@@ -20,7 +20,7 @@ class EPaperDisplay:
         self.__cntBeforeFullRefresh = 1   # Counts down on every screen update. When zero, a full refresh is needed
 
         self.fillColor = 0                # The foreground color. Use this for lines and text on both the black and red image canvases  
-        self.backColor = 0             # The backround color. Use this for lines and text on both the black and red image canvases  
+        self.backColor = 255                # The backround color. Use this for lines and text on both the black and red image canvases  
         
         self.font24 = ImageFont.truetype(os.path.join(displayDir, 'Font.ttc'), 24)
         self.font18 = ImageFont.truetype(os.path.join(displayDir, 'Font.ttc'), 18)
@@ -53,12 +53,8 @@ class EPaperDisplay:
         if(self.EnableDisplay):
             self.epd.init()
             self.epd.Clear()
-            self.backColor = 255
-            self.fillColor = 0
             self.__cntBeforeFullRefresh = UpdatesBeforeFullRefresh
         else:
-            self.backColor = 0
-            self.fillColor = 255
             if not os.path.exists(imgDumpDir):
                 os.makedirs(imgDumpDir)
                 print("Initalize: Epaper disabled")
@@ -146,7 +142,9 @@ class EPaperDisplay:
 
 
     # Converts a black and white image to an image with the desired foreground color leaves the white pixels as a mask
-    # Black pixels are seen as background and become transparent. White is seen as foreground
+    # White pixels are seen as background and become transparent. Black is seen as foreground color
+    # image: A black and white image to be converted to a transparent mask
+    # r, g, b: The Red, Green and Blue values for the desired foreground color for the mask. (Will be fully opaque)
     def __convertToMaskedForeground(self, image: Image, r:int, g:int, b:int) -> Image:
         R = 0
         G = 1
@@ -158,7 +156,7 @@ class EPaperDisplay:
         originalPixelData = mask.getdata()
         newPixelData = []
         for pixel in originalPixelData:
-            if pixel[R] == 255 and pixel[G] == 255 and pixel[B] == 255:
+            if pixel[R] == 0 and pixel[G] == 0 and pixel[B] == 0:
                 newPixelData.append((r, g, b, Opaque))
             else:
                 newPixelData.append((White, White, White, Transparent))
