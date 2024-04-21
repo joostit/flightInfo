@@ -20,7 +20,9 @@ class EPaperDisplay:
         self.__cntBeforeFullRefresh = 1   # Counts down on every screen update. When zero, a full refresh is needed
 
         self.fillColor = 0                # The foreground color. Use this for lines and text on both the black and red image canvases  
-        self.backColor = 255                # The backround color. Use this for lines and text on both the black and red image canvases  
+        self.backColor = 255              # The backround color. Use this for lines and text on both the black and red image canvases  
+        self.width = 800                  # The width of the display in pixels
+        self.height = 480                 # The height of the display in pixels
         
         self.font24 = ImageFont.truetype(os.path.join(displayDir, 'Font.ttc'), 24)
         self.font18 = ImageFont.truetype(os.path.join(displayDir, 'Font.ttc'), 18)
@@ -36,7 +38,7 @@ class EPaperDisplay:
         self.fontABlack28 = ImageFont.truetype(os.path.join(displayDir, 'arialBlack.ttf'), 28)
         self.fontABold24 = ImageFont.truetype(os.path.join(displayDir, 'arialBold.ttf'), 24)
 
-        self.epd = epd7in5b_V2.EPD()
+        
 
         self.blackImage = None      # Holds the image buffer for the black display layer
         self.redImage = None        # # Holds the image buffer for the red display layer
@@ -51,6 +53,7 @@ class EPaperDisplay:
         self.EnableDisplay = enableDisplay
 
         if(self.EnableDisplay):
+            self.epd = epd7in5b_V2.EPD()
             self.epd.init()
             self.epd.Clear()
             self.__cntBeforeFullRefresh = UpdatesBeforeFullRefresh
@@ -66,8 +69,8 @@ class EPaperDisplay:
         if(self.blackImage != None or self.redImage != None):
             raise RuntimeError("Cannot get new canvases when the old ones haven't been shown yet")
 
-        self.blackImage = Image.new('1', (self.epd.width, self.epd.height), self.backColor)
-        self.redImage = Image.new('1', (self.epd.width, self.epd.height), self.backColor)
+        self.blackImage = Image.new('1', (self.width, self.height), self.backColor)
+        self.redImage = Image.new('1', (self.width, self.height), self.backColor)
         blackCanvas = ImageDraw.Draw(self.blackImage)
         redCanvas = ImageDraw.Draw(self.redImage)
 
