@@ -76,7 +76,7 @@ class FlightDataDisplayer:
         blackCanvas.text((col2X, 90), str(infoData.windspeedMs) + "m/s", font = self.epd.fontArial20, fill = self.epd.fillColor)
         blackCanvas.text((col2X, 115), "(" + str(infoData.windGustsMs) + "m/s)", font = self.epd.fontArial20, fill = self.epd.fillColor)
 
-        blackCanvas.text((col2X, 140), str(infoData.QFE), font = self.epd.fontArial20, fill = self.epd.fillColor)
+        blackCanvas.text((col2X, 140), str(infoData.QFE) + "hPa", font = self.epd.fontArial20, fill = self.epd.fillColor)
         blackCanvas.text((col2X, 165), str(infoData.sunSet), font = self.epd.fontArial20, fill = self.epd.fillColor)
 
 

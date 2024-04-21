@@ -81,32 +81,73 @@ class flightDisplayMain:
     # Filters the list containing all flights and returns only flights that have landed
     def __getPastFlights(self, allFlights: List[flightData]) -> List[flightData]:
 
+        flights: List[flightData] = []
+
         # create some dummy flights. ToDo: Get the real thing
         flightA = flightData()
         flightA.aircraftRegistration = "PH-1480"
         flightA.pilotInCommandName = "Zacharias Zweefmans"
         flightA.launchTime = "12:23"
         flightA.landingTime = "13:19"
+        flights.append(flightA)
 
         flightB = flightData()
         flightB.aircraftRegistration = "PH-712"
         flightB.pilotInCommandName = "Frederique frillevrees"
-        flightB.launchTime = "8:04"
+        flightB.launchTime = "11:55"
         flightB.landingTime = "13:05"
+        flights.append(flightB)
 
         flightC = flightData()
         flightC.aircraftRegistration = "PH-401"
         flightC.pilotInCommandName = "Harry houthakker"
         flightC.launchTime = "11:31"
         flightC.landingTime = "12:54"
+        flights.append(flightC)
 
         flightD = flightData()
         flightD.aircraftRegistration = "PH-1471"
         flightD.pilotInCommandName = "Bram Brommermans"
-        flightD.launchTime = "10:03"
+        flightD.launchTime = "09:03"
         flightD.landingTime = "12:40"
+        flights.append(flightD)
 
-        return [flightA, flightB, flightC, flightD] 
+        flightE = flightData()
+        flightE.aircraftRegistration = "PH-798"
+        flightE.pilotInCommandName = "Peter Pief"
+        flightE.launchTime = "12:22"
+        flightE.landingTime = "12:37"
+        flights.append(flightE)
+
+        flightF = flightData()
+        flightF.aircraftRegistration = "D-8338"
+        flightF.pilotInCommandName = "Vinny Vario"
+        flightF.launchTime = "12:04"
+        flightF.landingTime = "12:25"
+        flights.append(flightF)
+
+        flightG = flightData()
+        flightG.aircraftRegistration = "PH-798"
+        flightG.pilotInCommandName = "Peter Pief"
+        flightG.launchTime = "11:59"
+        flightG.landingTime = "12:11"
+        flights.append(flightG)
+
+        flightH = flightData()
+        flightH.aircraftRegistration = "PH-1480"
+        flightH.pilotInCommandName = "Roland Schneider"
+        flightH.launchTime = "11:47"
+        flightH.landingTime = "11:55"
+        flights.append(flightH)
+
+        flightI = flightData()
+        flightI.aircraftRegistration = "PH-712"
+        flightI.pilotInCommandName = "Deborah De Beau"
+        flightI.launchTime = "11:12"
+        flightI.landingTime = "11:35"
+        flights.append(flightI)
+
+        return flights 
     
 
     # Filters the list containing all flights and returns only flights that are currently flying
