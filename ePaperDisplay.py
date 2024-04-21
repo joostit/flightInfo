@@ -5,7 +5,7 @@ from PIL import Image,ImageDraw,ImageFont, ImageOps
 import numpy as np
 import logging
 
-picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'display')
+displayDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'display')
 imgDumpDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'imgDump')
 
 logging.basicConfig(level=logging.DEBUG)
@@ -21,19 +21,19 @@ class EPaperDisplay:
         self.fillColor = 0                # The foreground color. Use this for lines and text on both the black and red image canvases  
         self.backColor = 0             # The backround color. Use this for lines and text on both the black and red image canvases  
         
-        self.font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
-        self.font18 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 18)
-        self.font16 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 16)
-        self.fontBBold18 = ImageFont.truetype(os.path.join(picdir, 'Bitter-Black.ttf'), 18)
-        self.fontBBold24 = ImageFont.truetype(os.path.join(picdir, 'Bitter-Black.ttf'), 24)
+        self.font24 = ImageFont.truetype(os.path.join(displayDir, 'Font.ttc'), 24)
+        self.font18 = ImageFont.truetype(os.path.join(displayDir, 'Font.ttc'), 18)
+        self.font16 = ImageFont.truetype(os.path.join(displayDir, 'Font.ttc'), 16)
+        self.fontBBold18 = ImageFont.truetype(os.path.join(displayDir, 'Bitter-Black.ttf'), 18)
+        self.fontBBold24 = ImageFont.truetype(os.path.join(displayDir, 'Bitter-Black.ttf'), 24)
 
-        self.fontArial18 = ImageFont.truetype(os.path.join(picdir, 'arial.ttf'), 18)
-        self.fontArial20 = ImageFont.truetype(os.path.join(picdir, 'arial.ttf'), 20)
-        self.fontArial24 = ImageFont.truetype(os.path.join(picdir, 'arial.ttf'), 24)
-        self.fontABlack20 = ImageFont.truetype(os.path.join(picdir, 'arialBlack.ttf'), 20)
-        self.fontABlack24 = ImageFont.truetype(os.path.join(picdir, 'arialBlack.ttf'), 24)
-        self.fontABlack28 = ImageFont.truetype(os.path.join(picdir, 'arialBlack.ttf'), 28)
-        self.fontABold24 = ImageFont.truetype(os.path.join(picdir, 'arialBold.ttf'), 24)
+        self.fontArial18 = ImageFont.truetype(os.path.join(displayDir, 'arial.ttf'), 18)
+        self.fontArial20 = ImageFont.truetype(os.path.join(displayDir, 'arial.ttf'), 20)
+        self.fontArial24 = ImageFont.truetype(os.path.join(displayDir, 'arial.ttf'), 24)
+        self.fontABlack20 = ImageFont.truetype(os.path.join(displayDir, 'arialBlack.ttf'), 20)
+        self.fontABlack24 = ImageFont.truetype(os.path.join(displayDir, 'arialBlack.ttf'), 24)
+        self.fontABlack28 = ImageFont.truetype(os.path.join(displayDir, 'arialBlack.ttf'), 28)
+        self.fontABold24 = ImageFont.truetype(os.path.join(displayDir, 'arialBold.ttf'), 24)
 
         self.epd = epd7in5b_V2.EPD()
 

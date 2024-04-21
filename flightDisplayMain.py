@@ -3,11 +3,13 @@
 
 import json
 import time
+from typing import List
 import requests
 import configparser
 from types import SimpleNamespace
 from flightData import flightData
 from flightDataDisplayer import FlightDataDisplayer
+from localInfoData import LocalInfoData
 
 class flightDisplayMain:
 
@@ -59,12 +61,13 @@ class flightDisplayMain:
     def __appCycle(self):
         #self.__displayFlightsDebug()
 
-        allFlights = []
+        allFlights = [flightData]
 
         pastFlights = self.__getPastFlights(allFlights)
         activeFlights = self.__getActiveFlights(allFlights)
+        localInfo = self.__getLocalInfo()
 
-        self.display.showData(activeFlights, pastFlights)
+        self.display.showData(activeFlights, pastFlights, localInfo)
 
         exit()      # Temporary exit here just for easier development.
 
@@ -75,9 +78,23 @@ class flightDisplayMain:
         return [flightA, flightB]
     
 
-    def __getActiveFlights(self, allFlights):
+    def __getLocalInfo(self):
+        data = LocalInfoData()
 
-        # create some dummy flights
+        # Fake data. ToDo: Get the real thing
+        data.QFE = 1014
+        data.temperature = 21.5
+        data.windDirection = 183
+        data.windspeedMs = 4.5
+        data.windGustsMs = 6.3
+        data.sunSet = "21:45"
+
+        return data
+
+
+    def __getActiveFlights(self, allFlights:List[flightData]):
+
+        # create some dummy flights. ToDo: Get the real thing
         flightA = flightData()
         flightA.aircraftRegistration = "PH-1480"
         flightA.pilotInCommandName = "Zacharias Zweefmans"
@@ -98,7 +115,7 @@ class flightDisplayMain:
 
         flightD = flightData()
         flightD.aircraftRegistration = "PH-1471"
-        flightD.pilotInCommandName = "Bam Brommermans"
+        flightD.pilotInCommandName = "Bram Brommermans"
         flightD.launchTime = "10:03"
         flightD.landingTime = "12:40"
 
