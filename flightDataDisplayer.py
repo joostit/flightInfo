@@ -1,26 +1,32 @@
 from datetime import datetime, timedelta
 import os
-import time
-from typing import List
+from typing import List, Tuple
 from ePaperDisplay import EPaperDisplay
 from flightData import flightData
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageDraw
 
 from localInfoData import LocalInfoData
 
+
+# Responsible for displaying information on the screen and its layout
 class FlightDataDisplayer:
 
     imgDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'img')
+
 
     def __init__(self):
         self.epd = EPaperDisplay()
 
 
-    def initialize(self, enableDisplay):
+    # Initializes the display. 
+    # enableDisplay: Set to true when the e-paper display should be enabled. Otherwise display images are saved as images
+    # This is useful during development 
+    def initialize(self, enableDisplay: bool):
         self.epd.initialize(enableDisplay)
 
 
-    def showData(self, activeFlights, pastFlights, infoData: LocalInfoData):
+    # Draws the given data to the display and refreshes the display
+    def showData(self, activeFlights: List[flightData], pastFlights: List[flightData], infoData: LocalInfoData):
         blackCanvas, redCanvas = self.epd.getDisplayCanvases()
 
         self.__drawLayout(blackCanvas, redCanvas)
@@ -31,7 +37,13 @@ class FlightDataDisplayer:
         self.epd.showCanvases()
 
 
-    def __drawLayout(self,  blackCanvas, redCanvas):
+    # Shuts down the display. This method must be called before exiting the application
+    def shutdown(self):
+        self.epd.shutdown()
+
+
+    # Draws the global layout to the screen
+    def __drawLayout(self,  blackCanvas:ImageDraw, redCanvas:ImageDraw):
         
         vertDivideX = 570
         topRowY = 33
@@ -43,13 +55,13 @@ class FlightDataDisplayer:
         blackCanvas.text((180, -7), "Last flights", font = self.epd.fontABlack28, fill = self.epd.fillColor)
 
 
-    def __drawInfoPanel(self,  blackCanvas, redCanvas, infoData: LocalInfoData):
+    # Fills the information panel with data
+    def __drawInfoPanel(self, blackCanvas:ImageDraw, redCanvas:ImageDraw, infoData: LocalInfoData):
 
-        col1X = 580
-        col2X = 660
+        col1X = 585
+        col2X = 665
 
-        refreshIcon = Image.open(os.path.join(self.imgDir, 'refreshA.bmp'))
-        blackCanvas.bitmap((590, 5), refreshIcon, fill = self.epd.fillColor)
+        self.__putBmp((590, 5), "refreshA.bmp", blackCanvas)
 
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
         blackCanvas.text((625, 5), timestamp, font = self.epd.fontArial20, fill = self.epd.fillColor)
@@ -68,35 +80,36 @@ class FlightDataDisplayer:
         blackCanvas.text((col2X, 165), str(infoData.sunSet), font = self.epd.fontArial20, fill = self.epd.fillColor)
 
 
-
-    def __drawActiveFlights(self, activeFlights: List[flightData], blackCanvas, redCanvas):
+    # Fills the active flights panel with data
+    def __drawActiveFlights(self, activeFlights: List[flightData], blackCanvas:ImageDraw, redCanvas:ImageDraw):
+        pass
             
-            y = 40
-
-            for fl in activeFlights:
-                flTime = fl.getFlightTime()
-
-                if flTime != None:
-                    flightTime = self.__pretty_time_delta(flTime.seconds)
-                else:
-                     flightTime = ""
-
-                blackCanvas.text((-2, y - 4), fl.aircraftRegistration, font = self.epd.fontABlack20, fill = self.epd.fillColor)
-                blackCanvas.text((100, y + 2), fl.launchTime, font = self.epd.fontArial18, fill = self.epd.fillColor)
-                blackCanvas.text((150, y + 2), fl.landingTime, font = self.epd.fontArial18, fill = self.epd.fillColor)
-                blackCanvas.text((215, y), fl.pilotInCommandName , font = self.epd.fontArial20, fill = self.epd.fillColor)
-                blackCanvas.text((525, y + 2), flightTime, font = self.epd.fontArial18, fill = self.epd.fillColor)
-
-                blackCanvas.line((10, y + 31, 555, y + 31), self.epd.fillColor, 1)           # Horizontal bar
-
-                y += 40
     
+    # Fills the past flights panel with data
+    def __drawPastFlights(self, pastFlights: List[flightData], blackCanvas:ImageDraw, redCanvas:ImageDraw):
+        y = 40
 
-    def __drawPastFlights(self, pastFlights, blackCanvas, redCanvas):
-            pass
+        for fl in pastFlights:
+            flTime = fl.getFlightTime()
+
+            if flTime != None:
+                flightTime = self.__pretty_time_delta(flTime.seconds)
+            else:
+                    flightTime = ""
+
+            blackCanvas.text((-2, y - 4), fl.aircraftRegistration, font = self.epd.fontABlack20, fill = self.epd.fillColor)
+            blackCanvas.text((100, y + 2), fl.launchTime, font = self.epd.fontArial18, fill = self.epd.fillColor)
+            blackCanvas.text((150, y + 2), fl.landingTime, font = self.epd.fontArial18, fill = self.epd.fillColor)
+            blackCanvas.text((215, y), fl.pilotInCommandName , font = self.epd.fontArial20, fill = self.epd.fillColor)
+            blackCanvas.text((525, y + 2), flightTime, font = self.epd.fontArial18, fill = self.epd.fillColor)
+
+            blackCanvas.line((10, y + 31, 555, y + 31), self.epd.fillColor, 1)           # Horizontal bar
+
+            y += 40
 
 
-    def __pretty_time_delta(self, seconds):
+    # Formats a count on seconds to display in HH:MM
+    def __pretty_time_delta(self, seconds:int):
         sign_string = '-' if seconds < 0 else ''
         seconds = abs(int(seconds))
         days, seconds = divmod(seconds, 86400)
@@ -112,7 +125,9 @@ class FlightDataDisplayer:
             return '%s:%02d' % (sign_string, seconds)
 
 
+    # Opens a bitmap from storage and draws it on the given canvas
+    def __putBmp(self, xy:Tuple[int, int], bmpName:str, canvas:ImageDraw):
+        bmp = Image.open(os.path.join(self.imgDir, bmpName))
+        canvas.bitmap(xy, bmp, fill = self.epd.fillColor)
     
 
-    def shutdown(self):
-        self.epd.shutdown()

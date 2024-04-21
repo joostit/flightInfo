@@ -1,8 +1,7 @@
-import datetime
 import os
+from typing import Tuple
 from display import epd7in5b_V2
 from PIL import Image,ImageDraw,ImageFont, ImageOps
-import numpy as np
 import logging
 
 displayDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'display')
@@ -10,8 +9,10 @@ imgDumpDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'imgDump'
 
 logging.basicConfig(level=logging.DEBUG)
 
-UpdatesBeforeFullRefresh = 3
+# The number of updates that will be done to the display before a full clear will be done.
+UpdatesBeforeFullRefresh = 5
 
+# High level e-paper driver.
 class EPaperDisplay:
 
     def __init__(self):
@@ -41,7 +42,10 @@ class EPaperDisplay:
         self.redImage = None        # # Holds the image buffer for the red display layer
 
 
-    def initialize(self, enableDisplay):
+    # Initializes the display
+    # When enableDisplay is set to true, the e-paper display will be used. Otherwise display output will 
+    # be written to /imgDump. Setting this to false is convenient during development and debugging slow e-paper displays
+    def initialize(self, enableDisplay:bool):
         print("Initializing and clearing e-paper display. This might take a few seconds")
 
         self.EnableDisplay = enableDisplay
@@ -60,7 +64,8 @@ class EPaperDisplay:
                 print("Initalize: Epaper disabled")
 
 
-    def getDisplayCanvases(self):
+    # Returns the black and red display canvases
+    def getDisplayCanvases(self) -> Tuple[ImageDraw.ImageDraw, ImageDraw.ImageDraw]:
 
         if(self.blackImage != None or self.redImage != None):
             raise RuntimeError("Cannot get new canvases when the old ones haven't been shown yet")
@@ -73,6 +78,8 @@ class EPaperDisplay:
         return blackCanvas, redCanvas
 
 
+    # Shows the canvases on the display.
+    # Call this method after drawing on the canvases provided by the getDisplayCanvases method
     def showCanvases(self):
         if(self.blackImage == None or self.redImage == None):
             raise RuntimeError("Cannot canvases on the display when they haven'nt been created yet")
@@ -81,6 +88,16 @@ class EPaperDisplay:
         self.__showImagesOnDisplay()
         self.blackImage = None
         self.redImage = None
+
+
+    # Clears the display and puts it in sleep mde. This method must be called before the application shuts down
+    def shutdown(self):
+        print("Clearing and shutting down the e-paper display. This might take a few seconds.")
+        if(self.EnableDisplay):
+            self.epd.Clear()
+            self.epd.sleep()
+
+        print("Display shutdown completed")
 
 
     # Prepares the display for the next update by reinitializing and clearing the display
@@ -109,7 +126,8 @@ class EPaperDisplay:
          self.__cntBeforeFullRefresh -= 1
 
 
-    def __saveDisplayImage(self, imgBlack, imgRed):
+    # Saves the two display images as one display image
+    def __saveDisplayImage(self, imgBlack: Image, imgRed: Image):
  
         whiteimg = Image.new('RGBA', (imgBlack.width, imgBlack.height))
         whiteimg.paste((255,255,255), (0,0, whiteimg.width, whiteimg.height) )
@@ -119,14 +137,17 @@ class EPaperDisplay:
 
         whiteimg.paste(redMask, (0,0), redMask)
         whiteimg.paste(blackMask, (0,0), blackMask)
+        
         whiteimg.save(os.path.join(imgDumpDir, 'display.bmp'))
+        imgBlack.save(os.path.join(imgDumpDir, 'blackFrame.bmp'))
+        imgRed.save(os.path.join(imgDumpDir, 'redFrame.bmp'))
 
         print("Saved display image to display.bmp")
 
 
     # Converts a black and white image to an image with the desired foreground color leaves the white pixels as a mask
     # Black pixels are seen as background and become transparent. White is seen as foreground
-    def __convertToMaskedForeground(self, image, r, g, b):
+    def __convertToMaskedForeground(self, image: Image, r:int, g:int, b:int) -> Image:
         R = 0
         G = 1
         B = 2
@@ -143,12 +164,3 @@ class EPaperDisplay:
                 newPixelData.append((White, White, White, Transparent))
         mask.putdata(newPixelData)
         return mask
-
-
-    def shutdown(self):
-        print("Clearing and shutting down the e-paper display. This might take a few seconds.")
-        if(self.EnableDisplay):
-            self.epd.Clear()
-            self.epd.sleep()
-
-        print("Display shutdown completed")

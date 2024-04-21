@@ -1,6 +1,11 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-
+################################
+#
+# Displays flight information obtained from Zweef.App on a WaveShare 7.5" e-paper display
+# Author: Joost Haverkort
+#
+################################
 import json
 import time
 from typing import List
@@ -11,6 +16,8 @@ from flightData import flightData
 from flightDataDisplayer import FlightDataDisplayer
 from localInfoData import LocalInfoData
 
+
+# Main application class
 class flightDisplayMain:
 
     def __init__(self):
@@ -21,14 +28,12 @@ class flightDisplayMain:
         self.display = FlightDataDisplayer()
 
 
-    def __get_flight_info(self):
+    # Reads flight information from the Zweef.App public API
+    def __get_flight_info(self) -> List:
     
         flightList = []
         api_url = '{0}flights.json'.format(self.api_url_base)
-
         response = requests.get(api_url, headers=self.headers)
-
-        print(api_url)
 
         if response.status_code == 200:
             decoded = response.content.decode('utf-8')
@@ -41,7 +46,6 @@ class flightDisplayMain:
 
             return flightList
         else:
-            print(response)
             return None
 
 
@@ -69,30 +73,13 @@ class flightDisplayMain:
 
         self.display.showData(activeFlights, pastFlights, localInfo)
 
-        exit()      # Temporary exit here just for easier development.
+    	# Temporary exit here just for easier development.
+        # ToDo: Remove this
+        exit()      
 
 
-    def __getPastFlights(self, allFlights):
-        flightA = flightData()
-        flightB = flightData()
-        return [flightA, flightB]
-    
-
-    def __getLocalInfo(self):
-        data = LocalInfoData()
-
-        # Fake data. ToDo: Get the real thing
-        data.QFE = 1014
-        data.temperature = 21.5
-        data.windDirection = 183
-        data.windspeedMs = 4.5
-        data.windGustsMs = 6.3
-        data.sunSet = "21:45"
-
-        return data
-
-
-    def __getActiveFlights(self, allFlights:List[flightData]):
+    # Filters the list containing all flights and returns only flights that have landed
+    def __getPastFlights(self, allFlights: List[flightData]) -> List[flightData]:
 
         # create some dummy flights. ToDo: Get the real thing
         flightA = flightData()
@@ -119,10 +106,34 @@ class flightDisplayMain:
         flightD.launchTime = "10:03"
         flightD.landingTime = "12:40"
 
-
         return [flightA, flightB, flightC, flightD] 
+    
+
+    # Filters the list containing all flights and returns only flights that are currently flying
+    def __getActiveFlights(self, allFlights:List[flightData]) -> List[flightData]:
+
+        flightA = flightData()
+        flightB = flightData()
+        return [flightA, flightB]
 
 
+    # Obtains useful local information
+    def __getLocalInfo(self) -> LocalInfoData:
+        data = LocalInfoData()
+
+        # Fake data. ToDo: Get the real thing
+        data.QFE = 1014
+        data.temperature = 21.5
+        data.windDirection = 183
+        data.windspeedMs = 4.5
+        data.windGustsMs = 6.3
+        data.sunSet = "21:45"
+
+        return data
+
+    
+    # Prints flight information to the console
+    # ToDo: Remove this
     def __displayFlightsDebug(self):
         flights = self.__get_flight_info()
 
@@ -151,6 +162,7 @@ class flightDisplayMain:
             print('[!] Request Failed')
 
 
+    # Reads the configuration file and stores it parameters
     def __readConfig(self):
             config = configparser.ConfigParser()
             config.read('fdconfig.conf')
@@ -165,11 +177,15 @@ class flightDisplayMain:
             print("Loaded club schema name: " + clubSchemaName)
 
 
+    # Shuts down the application.
+    # Important: This method must be called upon shutdown to prevent damage to the e-paper.
     def shutdown(self):
         self.display.shutdown()
 
 
-
+# Application Entry point.
+# Note that when terminating the application from the console with Ctrl+C, the application will gracefully shut down
+# This is to prevent damage to the e-paper display
 if __name__ == "__main__":
     
     flDisplay = flightDisplayMain()
