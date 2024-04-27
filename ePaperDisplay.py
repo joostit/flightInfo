@@ -33,12 +33,13 @@ class EPaperDisplay:
         self.fontArial18 = ImageFont.truetype(os.path.join(displayDir, 'arial.ttf'), 18)
         self.fontArial20 = ImageFont.truetype(os.path.join(displayDir, 'arial.ttf'), 20)
         self.fontArial24 = ImageFont.truetype(os.path.join(displayDir, 'arial.ttf'), 24)
+        self.fontABlack18 = ImageFont.truetype(os.path.join(displayDir, 'arialBlack.ttf'), 18)
         self.fontABlack20 = ImageFont.truetype(os.path.join(displayDir, 'arialBlack.ttf'), 20)
         self.fontABlack24 = ImageFont.truetype(os.path.join(displayDir, 'arialBlack.ttf'), 24)
         self.fontABlack28 = ImageFont.truetype(os.path.join(displayDir, 'arialBlack.ttf'), 28)
         self.fontABold24 = ImageFont.truetype(os.path.join(displayDir, 'arialBold.ttf'), 24)
-
-        
+        self.fontABold20 = ImageFont.truetype(os.path.join(displayDir, 'arialBold.ttf'), 20)
+        self.fontABold18 = ImageFont.truetype(os.path.join(displayDir, 'arialBold.ttf'), 18)
 
         self.blackImage = None      # Holds the image buffer for the black display layer
 

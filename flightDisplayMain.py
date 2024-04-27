@@ -6,6 +6,7 @@
 # Author: Joost Haverkort
 #
 ################################
+from datetime import datetime, timedelta
 import json
 import time
 from typing import List
@@ -53,7 +54,6 @@ class flightDisplayMain:
     def run(self):
         
         self.__readConfig()
-
         self.display.initialize(self.enableDisplay)
 
         while True:
@@ -70,12 +70,11 @@ class flightDisplayMain:
         pastFlights = self.__getPastFlights(allFlights)
         activeFlights = self.__getActiveFlights(allFlights)
         localInfo = self.__getLocalInfo()
-
         self.display.showData(activeFlights, pastFlights, localInfo)
 
     	# Temporary exit here just for easier development.
         # ToDo: Remove this
-        #exit()      
+        exit()      
 
 
     # Filters the list containing all flights and returns only flights that have landed
@@ -94,6 +93,7 @@ class flightDisplayMain:
         flightB = flightData()
         flightB.aircraftRegistration = "PH-712"
         flightB.pilotInCommandName = "Frederique frillevrees"
+        flightB.passengerName = "Isaac Instructiemans"
         flightB.launchTime = "11:55"
         flightB.landingTime = "13:05"
         flights.append(flightB)
@@ -107,7 +107,8 @@ class flightDisplayMain:
 
         flightD = flightData()
         flightD.aircraftRegistration = "PH-1471"
-        flightD.pilotInCommandName = "Bram Brommermans"
+        flightD.pilotInCommandName = "Cpt. Overlando Calrissian"
+        flightD.passengerName = "Chew bakka"
         flightD.launchTime = "09:03"
         flightD.landingTime = "12:40"
         flights.append(flightD)
@@ -143,6 +144,7 @@ class flightDisplayMain:
         flightI = flightData()
         flightI.aircraftRegistration = "PH-712"
         flightI.pilotInCommandName = "Deborah De Beau"
+        flightI.passengerName = "Isaac Instructiemans"
         flightI.launchTime = "11:12"
         flightI.landingTime = "11:35"
         flights.append(flightI)
@@ -153,9 +155,80 @@ class flightDisplayMain:
     # Filters the list containing all flights and returns only flights that are currently flying
     def __getActiveFlights(self, allFlights:List[flightData]) -> List[flightData]:
 
+        flights: List[flightData] = []
+
+        # create some dummy flights. ToDo: Get the real thing
         flightA = flightData()
+        flightA.aircraftRegistration = "PH-401"
+        flightA.pilotInCommandName = "N. Ulletjeshanger"
+        flightA.launchTime = (datetime.now() - timedelta(minutes=184)).strftime("%H:%M")
+        flightA.landingTime = ""
+        flights.append(flightA)
+
         flightB = flightData()
-        return [flightA, flightB]
+        flightB.aircraftRegistration = "PH-8338"
+        flightB.pilotInCommandName = "Zacharias Zweefmans"
+        flightB.launchTime = (datetime.now() - timedelta(minutes=146)).strftime("%H:%M")
+        flightB.landingTime = ""
+        flights.append(flightB)
+
+        flightC = flightData()
+        flightC.aircraftRegistration = "PH-1480"
+        flightC.pilotInCommandName = "Simon Tabilo"
+        flightC.launchTime = (datetime.now() - timedelta(minutes=64)).strftime("%H:%M")
+        flightC.landingTime = ""
+        flights.append(flightC)
+
+        flightD = flightData()
+        flightD.aircraftRegistration = "PH-798"
+        flightD.pilotInCommandName = "Deborah De Beau"
+        flightD.launchTime = (datetime.now() - timedelta(minutes=53)).strftime("%H:%M")
+        flightD.landingTime = ""
+        flights.append(flightD)
+
+        flightE = flightData()
+        flightE.aircraftRegistration = "PH-4289"
+        flightE.pilotInCommandName = "Simon Olist"
+        flightE.launchTime = (datetime.now() - timedelta(minutes=47)).strftime("%H:%M")
+        flightE.landingTime = ""
+        flights.append(flightE)
+
+        flightF = flightData()
+        flightF.aircraftRegistration = "PH-1471"
+        flightF.pilotInCommandName = "Dieter Discus"
+        flightF.launchTime = (datetime.now() - timedelta(minutes=37)).strftime("%H:%M")
+        flightF.landingTime = ""
+        flights.append(flightF)
+
+        flightG = flightData()
+        flightG.aircraftRegistration = "PH-850"
+        flightG.pilotInCommandName = "Gerard Gast"
+        flightG.launchTime = (datetime.now() - timedelta(minutes=31)).strftime("%H:%M")
+        flightG.landingTime = ""
+        flights.append(flightG)
+
+        flightH = flightData()
+        flightH.aircraftRegistration = "PH-952"
+        flightH.pilotInCommandName = "Oscar Optimist"
+        flightH.launchTime = (datetime.now() - timedelta(minutes=26)).strftime("%H:%M")
+        flightH.landingTime = ""
+        flights.append(flightH)
+
+        flightH = flightData()
+        flightH.aircraftRegistration = "PH-123"
+        flightH.pilotInCommandName = "Schlimmie Schlempp"
+        flightH.launchTime = (datetime.now() - timedelta(minutes=15)).strftime("%H:%M")
+        flightH.landingTime = ""
+        flights.append(flightH)
+
+        flightH = flightData()
+        flightH.aircraftRegistration = "PH-987"
+        flightH.pilotInCommandName = "Peter pasvertrokken"
+        flightH.launchTime = (datetime.now() - timedelta(minutes=3)).strftime("%H:%M")
+        flightH.landingTime = ""
+        flights.append(flightH)
+
+        return flights
 
 
     # Obtains useful local information

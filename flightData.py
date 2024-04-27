@@ -67,7 +67,7 @@ class flightData:
         if self.hasLanded():
             landTimestamp = datetime.datetime.strptime(self.landingTime, timeFormat)
         else:
-            landTimestamp = datetime.now().time
+            landTimestamp = datetime.datetime.now()
 
         diff = (landTimestamp - lauchTimestamp)
         return diff
