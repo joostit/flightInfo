@@ -75,7 +75,7 @@ class flightDisplayMain:
 
     	# Temporary exit here just for easier development.
         # ToDo: Remove this
-        exit()      
+        #exit()      
 
 
     # Filters the list containing all flights and returns only flights that have landed

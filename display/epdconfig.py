@@ -108,7 +108,8 @@ class RaspberryPi:
         return 0
 
     def module_exit(self, cleanup=False):
-        logger.debug("close 5V, Module enters 0 power consumption ...")
+        #logger.debug("close 5V, Module enters 0 power consumption ...")
+        pass
 
         # logger.debug("spi end")
         # self.SPI.close()

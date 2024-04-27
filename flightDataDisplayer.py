@@ -27,14 +27,14 @@ class FlightDataDisplayer:
 
     # Draws the given data to the display and refreshes the display
     def showData(self, activeFlights: List[flightData], pastFlights: List[flightData], infoData: LocalInfoData):
-        blackCanvas, redCanvas = self.epd.getDisplayCanvases()
+        blackCanvas = self.epd.getDisplayCanvas()
 
-        self.__drawLayout(blackCanvas, redCanvas)
-        self.__drawInfoPanel(blackCanvas, redCanvas, infoData)
-        self.__drawActiveFlights(activeFlights, blackCanvas, redCanvas)
-        self.__drawPastFlights(pastFlights, blackCanvas, redCanvas)
+        self.__drawLayout(blackCanvas)
+        self.__drawInfoPanel(blackCanvas, infoData)
+        self.__drawActiveFlights(activeFlights, blackCanvas)
+        self.__drawPastFlights(pastFlights, blackCanvas)
 
-        self.epd.showCanvases()
+        self.epd.showFullCanvas()
 
 
     # Shuts down the display. This method must be called before exiting the application
@@ -43,7 +43,7 @@ class FlightDataDisplayer:
 
 
     # Draws the global layout to the screen
-    def __drawLayout(self,  blackCanvas:ImageDraw, redCanvas:ImageDraw):
+    def __drawLayout(self,  blackCanvas:ImageDraw):
         
         vertDivideX = 570
         topRowY = 33
@@ -56,7 +56,7 @@ class FlightDataDisplayer:
 
 
     # Fills the information panel with data
-    def __drawInfoPanel(self, blackCanvas:ImageDraw, redCanvas:ImageDraw, infoData: LocalInfoData):
+    def __drawInfoPanel(self, blackCanvas:ImageDraw, infoData: LocalInfoData):
 
         col1X = 585
         col2X = 665
@@ -81,12 +81,12 @@ class FlightDataDisplayer:
 
 
     # Fills the active flights panel with data
-    def __drawActiveFlights(self, activeFlights: List[flightData], blackCanvas:ImageDraw, redCanvas:ImageDraw):
+    def __drawActiveFlights(self, activeFlights: List[flightData], blackCanvas:ImageDraw):
         pass
             
     
     # Fills the past flights panel with data
-    def __drawPastFlights(self, pastFlights: List[flightData], blackCanvas:ImageDraw, redCanvas:ImageDraw):
+    def __drawPastFlights(self, pastFlights: List[flightData], blackCanvas:ImageDraw):
         y = 40
 
         for fl in pastFlights:

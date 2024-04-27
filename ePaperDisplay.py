@@ -1,6 +1,6 @@
 import os
 from typing import Tuple
-from display import epd7in5b_V2
+from display import epd7in5_V2
 from PIL import Image,ImageDraw,ImageFont, ImageOps
 import logging
 
@@ -10,7 +10,7 @@ imgDumpDir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'imgDump'
 logging.basicConfig(level=logging.DEBUG)
 
 # The number of updates that will be done to the display before a full clear will be done.
-UpdatesBeforeFullRefresh = 5
+UpdatesBeforeFullRefresh = 2
 
 # High level e-paper driver.
 class EPaperDisplay:
@@ -41,7 +41,6 @@ class EPaperDisplay:
         
 
         self.blackImage = None      # Holds the image buffer for the black display layer
-        self.redImage = None        # # Holds the image buffer for the red display layer
 
 
     # Initializes the display
@@ -53,7 +52,7 @@ class EPaperDisplay:
         self.EnableDisplay = enableDisplay
 
         if(self.EnableDisplay):
-            self.epd = epd7in5b_V2.EPD()
+            self.epd = epd7in5_V2.EPD()
             self.epd.init()
             self.epd.Clear()
             self.__cntBeforeFullRefresh = UpdatesBeforeFullRefresh
@@ -64,29 +63,26 @@ class EPaperDisplay:
 
 
     # Returns the black and red display canvases
-    def getDisplayCanvases(self) -> Tuple[ImageDraw.ImageDraw, ImageDraw.ImageDraw]:
+    def getDisplayCanvas(self) -> Tuple[ImageDraw.ImageDraw]:
 
-        if(self.blackImage != None or self.redImage != None):
-            raise RuntimeError("Cannot get new canvases when the old ones haven't been shown yet")
+        if(self.blackImage != None):
+            raise RuntimeError("Cannot get a new canvas when the old one hasn't been shown yet")
 
         self.blackImage = Image.new('1', (self.width, self.height), self.backColor)
-        self.redImage = Image.new('1', (self.width, self.height), self.backColor)
         blackCanvas = ImageDraw.Draw(self.blackImage)
-        redCanvas = ImageDraw.Draw(self.redImage)
 
-        return blackCanvas, redCanvas
+        return blackCanvas
 
 
-    # Shows the canvases on the display.
-    # Call this method after drawing on the canvases provided by the getDisplayCanvases method
-    def showCanvases(self):
-        if(self.blackImage == None or self.redImage == None):
-            raise RuntimeError("Cannot canvases on the display when they haven'nt been created yet")
+    # Shows the full canvas on the display.
+    # Call this method after drawing on the canvas provided by the getDisplayCanvas method
+    def showFullCanvas(self):
+        if(self.blackImage == None):
+            raise RuntimeError("Cannot show the canvas on the display when it hasn't been created yet")
 
         self.__prepareForDisplayUpdate()
         self.__showImagesOnDisplay()
         self.blackImage = None
-        self.redImage = None
 
 
     # Clears the display and puts it in sleep mde. This method must be called before the application shuts down
@@ -113,33 +109,33 @@ class EPaperDisplay:
                 print("Omitting display full clear.")
 
 
-    # Shows the provided canvases on the display
+    # Shows the provided canvas on the display
     def __showImagesOnDisplay(self):
          
          if(self.EnableDisplay):
             print("Writing image data to display")
-            self.epd.display(self.epd.getbuffer(self.blackImage), self.epd.getbuffer(self.redImage))
+            self.epd.display(self.epd.getbuffer(self.blackImage))
          else:
             print("Display disabled. Writing image data to files")
-            self.__saveDisplayImage(self.blackImage, self.redImage)
+            self.__saveDisplayImage(self.blackImage)
          self.__cntBeforeFullRefresh -= 1
 
 
     # Saves the two display images as one display image
-    def __saveDisplayImage(self, imgBlack: Image, imgRed: Image):
+    def __saveDisplayImage(self, imgBlack: Image):
  
         whiteimg = Image.new('RGBA', (imgBlack.width, imgBlack.height))
         whiteimg.paste((255,255,255), (0,0, whiteimg.width, whiteimg.height) )
 
-        redMask = self.__convertToMaskedForeground(imgRed, 255, 0, 0)
+        #redMask = self.__convertToMaskedForeground(imgRed, 255, 0, 0)
         blackMask = self.__convertToMaskedForeground(imgBlack, 0, 0, 0)
 
-        whiteimg.paste(redMask, (0,0), redMask)
+        #whiteimg.paste(redMask, (0,0), redMask)
         whiteimg.paste(blackMask, (0,0), blackMask)
         
         whiteimg.save(os.path.join(imgDumpDir, 'display.bmp'))
         imgBlack.save(os.path.join(imgDumpDir, 'blackFrame.bmp'))
-        imgRed.save(os.path.join(imgDumpDir, 'redFrame.bmp'))
+        #imgRed.save(os.path.join(imgDumpDir, 'redFrame.bmp'))
 
         print("Saved display image to display.bmp")
 
